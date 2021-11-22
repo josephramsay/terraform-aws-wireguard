@@ -148,9 +148,9 @@ resource "aws_route_table_association" "vp-wgvpn-route-table-association-private
 }
 
 module "wireguard" {
-  source        = "git@github.com:josephramsay/terraform-aws-wireguard.git"
+  source        = "https://github.com/josephramsay/terraform-aws-wireguard.git"
   ssh_key_id    = "ssh-key-id-0987654"
-  vpc_id        = "vpc-01234567"
+  vpc_id        = "vp-wgvpn-vpc"
   subnet_ids    = ["subnet-01234567"]
   use_eip       = true
   eip_id        = "${aws_eip.wireguard.id}"
