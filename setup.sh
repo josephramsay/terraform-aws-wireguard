@@ -3,6 +3,7 @@
 KEYPATH=~/tf
 mkdir -p $KEYPATH
 
+# Generate wireguard keys for each devserver
 genclient () {
     CLIENTKEYS="joe ian iggy-new fabian-2"
     for k in $CLIENTKEYS; do
@@ -10,11 +11,12 @@ genclient () {
     done
 }
 
+# Generate a server wireguard key
 genserver () {
     wg genkey | tee $KEYPATH/vp-vpngw-privatekey | wg pubkey > $KEYPATH/vp-vpngw-publickey
 }
 
-
+# Get GitHub ssh keys... somehow use them as wg keys? 
 getghpubkeys () {
     USERLIST="josephramsay xycarto"
     for user in $USERLIST;
