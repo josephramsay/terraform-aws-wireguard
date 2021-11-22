@@ -1,3 +1,8 @@
+variable "namespace" {
+  type = string
+  default = "vp-wgvpn"
+}
+
 resource "aws_eip" "wireguard" {
   vpc = true
   tags = {
@@ -54,14 +59,14 @@ resource "aws_subnet" "vp-wgvpn-private-subnet" {
 
 # Internet Gateway
 resource "aws_internet_gateway" "vp-wgvpn-internet-gateway" {
-  vpc_id = aws_vpc.vpc.id
+  vpc_id = aws_vpc.vp-wgvpn-vpc.id
 
   tags = {
     Name = "${var.namespace}-internet-gateway"
     Namespace = var.namespace
   }
 
-  depends_on = [aws_vpc.vpc-wgvpn-vpc]
+  depends_on = [aws_vpc.vp-wgvpn-vpc]
 }
 
 # Elastic IP
@@ -70,7 +75,7 @@ resource "aws_eip" "vp-wgvpn-elastic-ip" {
   vpc   = true
 
   tags = {
-    Name = "elastic-ip-${count.index + 1}"
+    Name = "vp-wgvpn-elastic-ip-${count.index + 1}"
     Namespace = var.namespace
   }
 
@@ -80,8 +85,8 @@ resource "aws_eip" "vp-wgvpn-elastic-ip" {
 # NAT Gateway
 resource "aws_nat_gateway" "vp-wgvpn-nat-gateway" {
   count         = 3
-  allocation_id = aws_eip.elasticIPs[count.index].id
-  subnet_id     = aws_subnet.publicsubnet[count.index].id
+  allocation_id = aws_eip.vp-wgvpn-elastic-ip[count.index].id
+  subnet_id     = aws_subnet.vp-wgvpn-public-subnet[count.index].id
 
   tags = {
     Name = "${var.namespace}-nat-gateway-${count.index + 1}"
@@ -148,7 +153,7 @@ resource "aws_route_table_association" "vp-wgvpn-route-table-association-private
 }
 
 module "wireguard" {
-  source        = "https://github.com/josephramsay/terraform-aws-wireguard.git"
+  source        = "github.com/josephramsay/terraform-aws-wireguard.git"
   ssh_key_id    = "ssh-key-id-0987654"
   vpc_id        = "vp-wgvpn-vpc"
   subnet_ids    = ["subnet-01234567"]

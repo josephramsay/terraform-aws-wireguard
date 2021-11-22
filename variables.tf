@@ -24,10 +24,12 @@ variable "asg_max_size" {
 
 variable "vpc_id" {
   description = "The VPC ID in which Terraform will launch the resources."
+  default = "vp-wgvpn-vpc"
 }
 
 variable "subnet_ids" {
   type        = list(string)
+  default     = ["vp-wgvpn-public-subnet"]
   description = "A list of subnets for the Autoscaling Group to use for launching instances. May be a single subnet, but it must be an element in a list."
 }
 
